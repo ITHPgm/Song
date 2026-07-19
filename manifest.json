@@ -1,19 +1,19 @@
 {
-  "name": "Song — Music Player",
+  "name": "Song — Premium Music Player",
   "short_name": "Song",
-  "description": "A music player with offline support.",
-  "start_url": "./index.html",
+  "description": "A premium music player with offline support.",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#0a0a0f",
   "theme_color": "#8b5cf6",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "https://placehold.co/192x192/0a0a0f/FFFFFF.png?text=Song",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon-512.png",
+      "src": "https://placehold.co/512x512/0a0a0f/FFFFFF.png?text=Song",
       "sizes": "512x512",
       "type": "image/png"
     }
