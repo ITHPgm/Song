@@ -5,8 +5,8 @@
   'use strict';
 
   const ADS = [
-    'https://www.effectivecpmnetwork.com/rs7j3bsy2?key=0e7226fbf9f0ad6766ec55ec89a8d855',
-    'https://www.effectivecpmnetwork.com/hvtc4usa9i?key=f57c0afa29444d20c9edc489dccfb79e'
+    'https://mistletoeframesethel.com/hvtc4usa9i?key=f57c0afa29444d20c9edc489dccfb79e',
+    'https://mistletoeframesethel.com/rs7j3bsy2?key=0e7226fbf9f0ad6766ec55ec89a8d855'
   ];
 
   const STORAGE_KEY_LAST_SHOWN = 'ibk_ads_modal_last_shown';
