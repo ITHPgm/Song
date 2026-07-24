@@ -1,20 +1,19 @@
 // /assets/js/ad-modal.js
-
 (function () {
-
   'use strict';
 
   const ADS = [
+    'https://omg10.com/4/11382505',
     'https://mistletoeframesethel.com/rs7j3bsy2?key=0e7226fbf9f0ad6766ec55ec89a8d855',
+    'https://omg10.com/4/11380515',
     'https://mistletoeframesethel.com/hvtc4usa9i?key=f57c0afa29444d20c9edc489dccfb79e'
-    
   ];
 
   const STORAGE_KEY_LAST_SHOWN = 'ibk_ads_modal_last_shown';
   const STORAGE_KEY_AD_INDEX = 'ibk_ads_modal_index';
 
-  const SHOW_DELAY_MS = 10 * 1000;               // show after 10s
-  const REPEAT_INTERVAL_MS = 30 * 60 * 1000;     // repeat every 30min
+  const SHOW_DELAY_MS = 10 * 1000;            // first show after 10s
+  const REPEAT_INTERVAL_MS = 10 * 60 * 1000;   // show every 10 minutes
   const COUNTDOWN_SECONDS = 10;
 
   const MODAL_ID = 'ibkAdsModalOverlay';
@@ -23,9 +22,20 @@
   let countdownTimer = null;
   let autoShowTimer = null;
 
-  // ------------------------------------------------------------------
-  // Helpers
-  // ------------------------------------------------------------------
+  function safeGet(key) {
+    try {
+      return localStorage.getItem(key);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function safeSet(key, value) {
+    try {
+      localStorage.setItem(key, value);
+    } catch (e) {}
+  }
+
   function isStandalone() {
     return (
       window.matchMedia('(display-mode: standalone)').matches ||
@@ -34,29 +44,21 @@
   }
 
   function getNextAdUrl() {
-    const currentIndex = Number(localStorage.getItem(STORAGE_KEY_AD_INDEX) || '0');
+    const currentIndex = Number(safeGet(STORAGE_KEY_AD_INDEX) || '0');
     const nextIndex = currentIndex % ADS.length;
-    localStorage.setItem(STORAGE_KEY_AD_INDEX, String((nextIndex + 1) % ADS.length));
+
+    safeSet(STORAGE_KEY_AD_INDEX, String((nextIndex + 1) % ADS.length));
     return ADS[nextIndex];
   }
 
   function getLastShownAt() {
-    return Number(localStorage.getItem(STORAGE_KEY_LAST_SHOWN) || '0');
+    return Number(safeGet(STORAGE_KEY_LAST_SHOWN) || '0');
   }
 
   function markShown() {
-    localStorage.setItem(STORAGE_KEY_LAST_SHOWN, String(Date.now()));
+    safeSet(STORAGE_KEY_LAST_SHOWN, String(Date.now()));
   }
 
-  function canShowNow() {
-    const lastShown = getLastShownAt();
-    if (!lastShown) return true;
-    return Date.now() - lastShown >= REPEAT_INTERVAL_MS;
-  }
-
-  // ------------------------------------------------------------------
-  // Style injection (AdMob‑inspired, scrollbars hidden)
-  // ------------------------------------------------------------------
   function injectStyles() {
     if (document.getElementById(STYLE_ID)) return;
 
@@ -89,22 +91,22 @@
         box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
         display: flex;
         flex-direction: column;
-        /* Hide scrollbars on the container itself */
         scrollbar-width: none;
         -ms-overflow-style: none;
+        width: min(92vw, 680px);
+        height: min(92vh, 760px);
       }
 
       #${MODAL_ID} .ibk-ads-container::-webkit-scrollbar {
         display: none;
       }
 
-      /* Close / countdown button – only one, no duplicates */
       #${MODAL_ID} .ibk-ads-close {
         position: absolute;
         top: 14px;
         right: 14px;
         z-index: 10;
-        background: rgba(0, 0, 0, 0.55);
+        background: rgba(0, 0, 0, 0.65);
         backdrop-filter: blur(4px);
         -webkit-backdrop-filter: blur(4px);
         border: none;
@@ -118,13 +120,12 @@
         letter-spacing: 0.3px;
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
         user-select: none;
-        pointer-events: none; /* disabled until countdown ends */
+        pointer-events: none;
       }
 
       #${MODAL_ID} .ibk-ads-close.enabled {
-        background: rgba(0, 0, 0, 0.65);
         cursor: pointer;
         pointer-events: auto;
       }
@@ -134,26 +135,19 @@
         transform: scale(0.96);
       }
 
-      /* Hide close icon during countdown, show label only */
       #${MODAL_ID} .ibk-ads-close .ibk-ads-close-icon {
-        display: none; /* hidden until countdown ends */
-        font-size: 18px;
+        display: inline;
+        font-size: 16px;
         line-height: 1;
-      }
-
-      #${MODAL_ID} .ibk-ads-close.enabled .ibk-ads-close-icon {
-        display: inline; /* show when enabled */
       }
 
       #${MODAL_ID} .ibk-ads-close .ibk-ads-close-label {
         font-size: 14px;
-        font-weight: 500;
-        min-width: 60px;
+        font-weight: 600;
+        min-width: 70px;
         text-align: center;
-        transition: all 0.2s;
       }
 
-      /* Ad content area – clickable */
       #${MODAL_ID} .ibk-ads-content {
         flex: 1;
         position: relative;
@@ -165,7 +159,6 @@
         cursor: pointer;
       }
 
-      /* Hide iframe scrollbars */
       #${MODAL_ID} .ibk-ads-frame {
         width: 100%;
         height: 100%;
@@ -174,10 +167,19 @@
         overflow: hidden;
         scrollbar-width: none;
         -ms-overflow-style: none;
+        pointer-events: none;
       }
 
       #${MODAL_ID} .ibk-ads-frame::-webkit-scrollbar {
         display: none;
+      }
+
+      #${MODAL_ID} .ibk-ads-click-layer {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        cursor: pointer;
+        background: transparent;
       }
 
       #${MODAL_ID} .ibk-ads-fallback {
@@ -191,6 +193,7 @@
         background: #0b0e14;
         color: #cbd5e1;
         text-align: center;
+        z-index: 3;
       }
 
       #${MODAL_ID} .ibk-ads-fallback.show {
@@ -212,39 +215,37 @@
         opacity: 0.7;
       }
 
-      /* ─── Responsive sizing via media queries (fallback) ─── */
-      /* The main sizing is now handled by fitModalToScreen() with JS */
-      /* We keep these as safety for initial render */
       @media (max-width: 520px) {
         #${MODAL_ID}.ibk-ads-overlay {
           padding: 0;
         }
+
         #${MODAL_ID} .ibk-ads-container {
           width: 100vw;
           height: 100vh;
           border-radius: 0;
         }
+
         #${MODAL_ID} .ibk-ads-close {
           top: 12px;
           right: 12px;
           padding: 6px 14px;
           font-size: 14px;
         }
+
         #${MODAL_ID} .ibk-ads-close .ibk-ads-close-icon {
-          font-size: 18px;
+          font-size: 16px;
         }
+
         #${MODAL_ID} .ibk-ads-close .ibk-ads-close-label {
           font-size: 13px;
-          min-width: 50px;
+          min-width: 58px;
         }
       }
     `;
     document.head.appendChild(style);
   }
 
-  // ------------------------------------------------------------------
-  // DOM creation
-  // ------------------------------------------------------------------
   function createModal() {
     if (document.getElementById(MODAL_ID)) return;
 
@@ -254,13 +255,11 @@
 
     overlay.innerHTML = `
       <div class="ibk-ads-container" role="dialog" aria-modal="true" aria-label="Advertisement">
-        <!-- Single close/countdown button -->
         <button type="button" id="ibkAdsCloseBtn" class="ibk-ads-close" aria-label="Close ad">
-          <span class="ibk-ads-close-icon">✕</span>
-          <span class="ibk-ads-close-label" id="ibkAdsCountdownLabel">skip 10s</span>
+          <i class="fas fa-times ibk-ads-close-icon"></i>
+          <span class="ibk-ads-close-label" id="ibkAdsCountdownLabel">Skip 10s</span>
         </button>
 
-        <!-- Ad content (clickable) -->
         <div id="ibkAdsContent" class="ibk-ads-content">
           <iframe
             id="ibkAdsFrame"
@@ -271,6 +270,8 @@
             allow="autoplay; fullscreen; clipboard-read; clipboard-write"
             scrolling="no"
           ></iframe>
+
+          <div id="ibkAdsClickLayer" class="ibk-ads-click-layer" aria-hidden="true"></div>
 
           <div id="ibkAdsFallback" class="ibk-ads-fallback">
             <img
@@ -288,9 +289,6 @@
     document.body.appendChild(overlay);
   }
 
-  // ------------------------------------------------------------------
-  // DOM references
-  // ------------------------------------------------------------------
   function getModal() {
     return document.getElementById(MODAL_ID);
   }
@@ -315,74 +313,53 @@
     return document.getElementById('ibkAdsFallback');
   }
 
-  function getFallbackImg() {
-    return document.getElementById('ibkAdsFallbackImg');
+  function getClickLayer() {
+    return document.getElementById('ibkAdsClickLayer');
   }
 
-  // ------------------------------------------------------------------
-  // Core logic
-  // ------------------------------------------------------------------
   function fitModalToScreen() {
-    const container = document.querySelector(`#${MODAL_ID} .ibk-ads-container`);
+    const container = document.querySelector('#' + MODAL_ID + ' .ibk-ads-container');
     if (!container) return;
 
     const vw = window.innerWidth;
     const vh = window.innerHeight;
 
-    // Define max dimensions based on viewport
-    let maxWidth, maxHeight;
-
     if (vw <= 520) {
-      // Mobile: full screen
-      maxWidth = vw;
-      maxHeight = vh;
+      container.style.width = '100vw';
+      container.style.height = '100vh';
       container.style.borderRadius = '0';
-    } else {
-      // Desktop/tablet: use a ratio and limit
-      const ratio = 9 / 16; // height/width
-      let w = Math.min(vw * 0.85, 680);
-      let h = w * ratio;
-      if (h > vh * 0.85) {
-        h = vh * 0.85;
-        w = h / ratio;
-      }
-      maxWidth = Math.min(w, vw * 0.85);
-      maxHeight = Math.min(h, vh * 0.85);
-
-      // Ensure minimum sizes
-      maxWidth = Math.max(maxWidth, 320);
-      maxHeight = Math.max(maxHeight, 480);
-
-      // Round to avoid subpixel issues
-      maxWidth = Math.round(maxWidth);
-      maxHeight = Math.round(maxHeight);
-
-      container.style.borderRadius = '24px';
+      return;
     }
 
-    container.style.width = maxWidth + 'px';
-    container.style.height = maxHeight + 'px';
-    container.style.maxWidth = 'none';
-    container.style.maxHeight = 'none';
+    const maxWidth = Math.min(vw * 0.85, 680);
+    const maxHeight = Math.min(vh * 0.85, 760);
+
+    container.style.width = Math.round(Math.max(maxWidth, 320)) + 'px';
+    container.style.height = Math.round(Math.max(maxHeight, 480)) + 'px';
+    container.style.borderRadius = '24px';
   }
 
   function openInSamePage(url) {
-    location.href = url;
+    window.location.href = url;
   }
 
-  // Make the ad content clickable (includes fallback area)
   function setupContentClick(currentUrl) {
+    const layer = getClickLayer();
     const content = getContent();
-    if (!content) return;
-    // Remove any previous listener to avoid duplication
-    content.onclick = null;
-    content.addEventListener('click', function (e) {
-      if (e.target.closest('#ibkAdsCloseBtn')) return;
+    if (!layer || !content) return;
+
+    layer.onclick = function () {
       openInSamePage(currentUrl);
-    });
+    };
+
+    content.onclick = function (e) {
+      if (e.target.closest('#ibkAdsCloseBtn')) return;
+      if (e.target.closest('#ibkAdsClickLayer')) {
+        openInSamePage(currentUrl);
+      }
+    };
   }
 
-  // Show fallback if iframe fails
   function showFallback() {
     const fallback = getFallback();
     if (fallback) fallback.classList.add('show');
@@ -397,7 +374,7 @@
 
     frame.src = url;
 
-    let loadTimer = setTimeout(() => {
+    const loadTimer = setTimeout(() => {
       if (fallback && !fallback.classList.contains('show')) {
         showFallback();
       }
@@ -414,63 +391,6 @@
     };
 
     return true;
-  }
-
-  // Countdown and close logic – shows "skip Xs", hides close icon until end
-  function startCountdown(currentUrl) {
-    const closeBtn = getCloseBtn();
-    const label = getCountdownLabel();
-    if (!closeBtn || !label) return;
-
-    let remaining = COUNTDOWN_SECONDS;
-
-    // Disable close button
-    closeBtn.classList.remove('enabled');
-    closeBtn.style.pointerEvents = 'none';
-
-    // Show "skip Xs" text, hide close icon
-    const icon = closeBtn.querySelector('.ibk-ads-close-icon');
-    if (icon) icon.style.display = 'none';
-
-    label.textContent = 'skip ' + remaining + 's';
-
-    clearInterval(countdownTimer);
-
-    countdownTimer = setInterval(() => {
-      remaining -= 1;
-      if (remaining <= 0) {
-        clearInterval(countdownTimer);
-        countdownTimer = null;
-        // Countdown ended: show close icon and enable button
-        label.textContent = '✕';
-        if (icon) icon.style.display = 'inline';
-        closeBtn.classList.add('enabled');
-        closeBtn.style.pointerEvents = 'auto';
-        closeBtn.onclick = function () {
-          hideModal();
-        };
-        return;
-      }
-      label.textContent = 'skip ' + remaining + 's';
-    }, 1000);
-  }
-
-  function showModal() {
-    const modal = getModal();
-    if (!modal) return;
-
-    const url = getNextAdUrl();
-
-    loadAdInFrame(url);
-    setupContentClick(url);
-
-    modal.classList.remove('ibk-ads-hidden');
-    fitModalToScreen();
-    markShown();
-
-    startCountdown(url);
-
-    scheduleAutoShow();
   }
 
   function hideModal() {
@@ -492,17 +412,62 @@
       closeBtn.classList.remove('enabled');
       closeBtn.style.pointerEvents = 'none';
       closeBtn.onclick = null;
-      // Reset icon visibility
-      const icon = closeBtn.querySelector('.ibk-ads-close-icon');
-      if (icon) icon.style.display = 'none';
-      const label = getCountdownLabel();
-      if (label) label.textContent = 'skip 10s';
     }
+
+    const label = getCountdownLabel();
+    if (label) label.textContent = 'Skip 10s';
   }
 
-  // ------------------------------------------------------------------
-  // Scheduling
-  // ------------------------------------------------------------------
+  function startCountdown() {
+    const closeBtn = getCloseBtn();
+    const label = getCountdownLabel();
+    if (!closeBtn || !label) return;
+
+    let remaining = COUNTDOWN_SECONDS;
+
+    closeBtn.classList.remove('enabled');
+    closeBtn.style.pointerEvents = 'none';
+    closeBtn.onclick = null;
+
+    label.textContent = 'Skip ' + remaining + 's';
+
+    clearInterval(countdownTimer);
+
+    countdownTimer = setInterval(() => {
+      remaining -= 1;
+
+      if (remaining <= 0) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+
+        label.textContent = 'Close';
+        closeBtn.classList.add('enabled');
+        closeBtn.style.pointerEvents = 'auto';
+        closeBtn.onclick = hideModal;
+        return;
+      }
+
+      label.textContent = 'Skip ' + remaining + 's';
+    }, 1000);
+  }
+
+  function showModal() {
+    const modal = getModal();
+    if (!modal) return;
+
+    const url = getNextAdUrl();
+
+    loadAdInFrame(url);
+    setupContentClick(url);
+
+    modal.classList.remove('ibk-ads-hidden');
+    fitModalToScreen();
+    markShown();
+
+    startCountdown();
+    scheduleAutoShow();
+  }
+
   function scheduleAutoShow() {
     if (autoShowTimer) clearTimeout(autoShowTimer);
 
@@ -520,33 +485,20 @@
     }, delay);
   }
 
-  // ------------------------------------------------------------------
-  // Initialisation
-  // ------------------------------------------------------------------
   function init() {
     injectStyles();
     createModal();
 
     if (isStandalone()) return;
 
-    const closeBtn = getCloseBtn();
-    if (closeBtn) {
-      closeBtn.classList.remove('enabled');
-      closeBtn.style.pointerEvents = 'none';
-      const icon = closeBtn.querySelector('.ibk-ads-close-icon');
-      if (icon) icon.style.display = 'none';
-    }
-
+    fitModalToScreen();
     window.addEventListener('resize', fitModalToScreen);
 
     scheduleAutoShow();
 
     window.IBKAdsModal = {
       show: showModal,
-      hide: hideModal,
-      next: getNextAdUrl,
-      schedule: scheduleAutoShow,
-      fit: fitModalToScreen
+      hide: hideModal
     };
   }
 
@@ -555,5 +507,4 @@
   } else {
     init();
   }
-
 })();
