@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Basic Meta -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+<title>Song Music Player | Stream & Discover Music</title>
+
+<meta name="description" content="Listen to your favourite songs with Song. A fast, modern, and premium music player. Stream, discover, and enjoy high-quality audio anywhere.">
+<meta name="keywords" content="music player, songs, streaming, audio player, mp3, playlist, online music">
+<meta name="author" content="Song Team">
+
+<!-- Theme / UI -->
+<meta name="theme-color" content="#0b0e14">
+<meta name="color-scheme" content="dark light">
+
+<!-- PWA -->
+<link rel="manifest" href="https://song-puce.vercel.app/manifest.json">
+<link rel="stylesheet" href="https://song-puce.vercel.app/assets/css/styles.css">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Song">
+
+<!-- Favicon & Icons -->
+<link rel="icon" type="image/png" sizes="192x192" href="https://placehold.co/192x192/0a0a0f/FFFFFF.png?text=Song">
+<link rel="apple-touch-icon" sizes="512x512" href="https://placehold.co/512x512/0a0a0f/FFFFFF.png?text=Song">
+<link rel="mask-icon" href="https://placehold.co/192x192/0a0a0f/FFFFFF.png?text=Song" color="#0b0e14">
+
+<!-- Open Graph (Facebook / WhatsApp) -->
+<meta property="og:title" content="Song — Premium Music Player">
+<meta property="og:description" content="Stream music seamlessly with a fast and modern player.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://song-puce.vercel.app/">
+<meta property="og:image" content="https://placehold.co/192x192/0a0a0f/FFFFFF.png?text=Song">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Song — Premium Music Player">
+<meta name="twitter:description" content="Enjoy music anywhere with our powerful player.">
+<meta name="twitter:image" content="https://placehold.co/192x192/0a0a0f/FFFFFF.png?text=Song">
+
+<!-- Monetag -->
+<meta name="monetag" content="ba912929f89aa55a89fb25a0d5de3e5a">
+
+<!-- Performance -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+
+<script>(function(s){s.dataset.zone='11417468',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+<script src="https://song-puce.vercel.app/assets/js/scripts.js" defer></script>
+<script>(function(s){s.dataset.zone='11417538',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+</head>
+<body>
+
+    <div id="app">
+
+        <!-- TOP BAR -->
+        <header class="top-bar">
+            <div class="logo">Song<span>.</span></div>
+            <div class="header-actions">
+                <!-- PWA Install Button -->
+                <button id="installBtn" aria-label="Install App">
+                    <i class="fa-solid fa-download"></i>
+                </button>
+                <!-- Record Button -->
+                <button id="recordBtn" aria-label="Record Audio" onclick="toggleRecording()">
+                    <i class="fa-solid fa-microphone"></i>
+                </button>
+                <button onclick="changeSection(document.querySelector('.nav-item[data-target=for-you-section]'))" aria-label="For You">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </button>
+                <button onclick="changeSection(document.querySelector('.nav-item[data-target=search-section]'))" aria-label="Search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+                <label class="file-btn" title="Open local files (audio/video)">
+                    <input type="file" id="localFileInput" accept="audio/*,video/*" multiple style="display:none" onchange="handleLocalFiles(event)">
+                    <i class="fa-solid fa-folder-open"></i>
+                </label>
+            </div>
+        </header>
+
+        <!-- NOTIFICATION CONTAINER -->
+        <div class="notif-container" id="notifContainer"></div>
+
+        <!-- MAIN SCROLLABLE -->
+        <div class="main-scroll" id="mainScroll">
+
+            <!-- HOME -->
+            <div id="home-section" class="content-section active">
+                <h2 class="section-head">Discover <span style="font-weight:300;color:#636366;-webkit-text-fill-color:#636366;">·</span> <span style="font-size:14px;font-weight:400;color:#636366;-webkit-text-fill-color:#636366;">curated for you</span></h2>
+
+                <div id="homeAiStrip" style="display:none;">
+                    <div class="sub-head"><i class="fa-solid fa-sparkles" style="color:#ff375f;"></i> For You <span class="badge" style="background:#ff375f;">AI</span></div>
+                    <div class="carousel-wrap">
+                        <div id="homeAiList" class="carousel-track"></div>
+                    </div>
+                </div>
+
+                <div class="sub-head" onclick="openCategoryQueue('Hindi','Latest Hindi Songs')">Hindi <span class="arrow">›</span></div>
+                <div class="carousel-wrap"><div id="hindi-grid" class="carousel-track"></div></div>
+
+                <div class="sub-head" onclick="openCategoryQueue('English','Hollywood Top Hits')">English <span class="arrow">›</span></div>
+                <div class="carousel-wrap"><div id="english-grid" class="carousel-track"></div></div>
+
+                <div class="sub-head" onclick="openCategoryQueue('Bhojpuri','Bhojpuri Song')">Bhojpuri <span class="arrow">›</span></div>
+                <div class="carousel-wrap"><div id="bhojpuri-grid" class="carousel-track"></div></div>
+
+                <div class="sub-head" onclick="openCategoryQueue('K-pop','K-pop Hits')">K-pop <span class="arrow">›</span></div>
+                <div class="carousel-wrap"><div id="kpop-grid" class="carousel-track"></div></div>
+
+                <div class="sub-head" onclick="openCategoryQueue('Afrobeat','Afrobeat Vibes')">Afrobeat <span class="arrow">›</span></div>
+                <div class="carousel-wrap"><div id="afrobeat-grid" class="carousel-track"></div></div>
+
+                <div class="sub-head" onclick="openCategoryQueue('Latin','Latin Hits')">Latin <span class="arrow">›</span></div>
+                <div class="carousel-wrap"><div id="latin-grid" class="carousel-track"></div></div>
+            </div>
+
+            <!-- SEARCH -->
+            <div id="search-section" class="content-section">
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Search song, album, artist..." onkeypress="if(event.key==='Enter') searchSaavn()">
+                    <button class="search-btn" onclick="searchSaavn()">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+
+                <div class="search-tabs">
+                    <button class="tab active" data-endpoint="api/search/songs" onclick="setSearchEndpoint(this)">Songs</button>
+                    <button class="tab" data-endpoint="api/search/albums" onclick="setSearchEndpoint(this)">Albums</button>
+                    <button class="tab" data-endpoint="api/search/artists" onclick="setSearchEndpoint(this)">Artists</button>
+                    <button class="tab" data-endpoint="api/search/playlists" onclick="setSearchEndpoint(this)">Playlists</button>
+                </div>
+
+                <div class="recent-searches" id="recentSearchesContainer">
+                    <div class="sub-head" style="margin-top:0;">Recent</div>
+                    <div id="recentSearchesList" class="track-list"></div>
+                </div>
+
+                <div id="searchAiBox" style="display:none;">
+                    <div class="sub-head" style="margin:4px 0 8px;"><i class="fa-solid fa-robot" style="color:#ff375f;"></i> AI Suggestions <span class="badge" style="background:#ff375f;">AI</span></div>
+                    <div id="searchAiList" class="track-list"></div>
+                </div>
+
+                <div class="sub-head" style="margin-top:6px;">Results</div>
+                <div id="songResults" class="track-list">
+                    <p class="loading-state">Type and tap search.</p>
+                </div>
+            </div>
+
+            <!-- QUEUE -->
+            <div id="queue-section" class="content-section">
+                <h2 class="section-head" style="margin-top:4px;">Queue</h2>
+                <div id="queueList" class="track-list" data-allow-drag="true">
+                    <p class="loading-state">Queue is empty.</p>
+                </div>
+            </div>
+
+            <!-- PLAYLISTS -->
+            <div id="playlists-section" class="content-section">
+                <h2 class="section-head" style="margin-top:4px;">Playlists</h2>
+                <button class="create-pl-btn" onclick="openPlaylistModal()">
+                    <i class="fa-solid fa-plus"></i> New Playlist
+                </button>
+
+                <div id="userPlaylistsList" class="playlist-grid">
+                    <div class="playlist-card active" data-playlist-id="favorites" data-playlist-name="Favorites" onclick="viewPlaylist('favorites')">
+                        <div class="pl-icon fav"><i class="fa-solid fa-heart"></i></div>
+                        <div class="pl-info">
+                            <strong>Favorites</strong>
+                            <span id="favoritesCount">0 songs</span>
+                        </div>
+                        <div class="pl-actions">
+                            <button onclick="event.stopPropagation(); playPlaylist('favorites')" title="Play">
+                                <i class="fa-solid fa-play"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="currentPlaylistTitle" class="sub-head" style="display:none;margin-top:16px;"></div>
+                <div id="currentPlaylistTracks" class="track-list" data-allow-drag="true">
+                    <p class="loading-state">Select a playlist.</p>
+                </div>
+            </div>
+
+            <!-- FOR YOU -->
+            <div id="for-you-section" class="content-section">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;">
+                    <h2 class="section-head" style="margin:0;"><i class="fa-solid fa-sparkles" style="color:#ff375f;-webkit-text-fill-color:#ff375f;"></i> For You</h2>
+                    <button id="forYouRefreshBtn" onclick="generateForYouRecs()" style="background:rgba(28,28,30,0.92);border:1px solid rgba(255,255,255,0.06);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#aeaeb2;transition:0.12s;font-size:1rem;">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+                </div>
+                <p style="color:#636366;font-size:13px;margin:4px 0 14px;">Aapke listening history ke hisaab se</p>
+
+                <!-- AI Taste Controls -->
+                <button onclick="toggleTastePanel()" style="background:rgba(28,28,30,0.85);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 16px;color:#aeaeb2;font-size:13px;cursor:pointer;margin-bottom:12px;">
+                    <i class="fa-solid fa-sliders"></i> AI Taste Controls
+                </button>
+                <div id="aiTastePanel" class="ai-taste-panel">
+                    <div class="slider-group">
+                        <label>Discovery vs. Familiarity</label>
+                        <input type="range" min="0" max="100" value="50">
+                        <div class="range-labels"><span>Familiar</span><span>Balanced</span><span>New</span></div>
+                    </div>
+                    <div class="slider-group">
+                        <label>Vibe: Acoustic vs. Electronic</label>
+                        <input type="range" min="0" max="100" value="50">
+                        <div class="range-labels"><span>Acoustic</span><span>Balanced</span><span>Electronic</span></div>
+                    </div>
+                    <button onclick="notify('Taste preferences saved!', 'success')" style="background:linear-gradient(135deg,#8b5cf6,#a855f7);border:none;border-radius:8px;padding:8px 16px;color:#fff;font-weight:600;cursor:pointer;width:100%;">Save Preferences</button>
+                </div>
+
+                <!-- Listening History (new) -->
+                <div id="fyListeningHistorySection" style="display:none;">
+                    <div class="sub-head"><i class="fa-solid fa-clock-rotate-left" style="color:#0a84ff;"></i> Recently Played</div>
+                    <div id="fyListeningHistoryList" class="track-list"></div>
+                </div>
+
+                <div id="fyMoodSection" style="display:none;">
+                    <div class="sub-head"><i class="fa-solid fa-mask" style="color:#ff375f;"></i> Mood ke hisaab se <span class="badge" style="background:#ff375f;">AI</span></div>
+                    <div id="fyMoodList" class="track-list"></div>
+                </div>
+                <div id="fyNowPlayingSection" style="display:none;">
+                    <div class="sub-head"><i class="fa-solid fa-waveform" style="color:#30d158;"></i> Isi vibe mein <span class="badge" style="background:#ff375f;">AI</span></div>
+                    <div id="fyNowPlayingList" class="track-list"></div>
+                </div>
+                <div id="fyHistorySection" style="display:none;">
+                    <div class="sub-head"><i class="fa-solid fa-clock-rotate-left" style="color:#0a84ff;"></i> AI History se <span class="badge" style="background:#ff375f;">AI</span></div>
+                    <div id="fyHistoryList" class="track-list"></div>
+                </div>
+                <div id="fyFavoritesSection" style="display:none;">
+                    <div class="sub-head"><i class="fa-solid fa-heart" style="color:#ff375f;"></i> Favorites se <span class="badge" style="background:#ff375f;">AI</span></div>
+                    <div id="fyFavoritesList" class="track-list"></div>
+                </div>
+
+                <div id="fyEmptyState" style="text-align:center;padding:40px 16px;color:#636366;">
+                    <div style="font-size:48px;margin-bottom:10px;"><i class="fa-solid fa-headphones"></i></div>
+                    <div style="font-size:15px;">Kuch songs play karo ya favorites mein add karo,<br>phir AI aapke mood ke hisaab se recommendations dega!</div>
+                </div>
+            </div>
+
+        </div>
+        <!-- END MAIN SCROLL -->
+
+        <!-- BOTTOM NAV -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-target="home-section" onclick="changeSection(this)">
+                <i class="fa-solid fa-house"></i>
+                Home
+            </button>
+            <button class="nav-item" data-target="search-section" onclick="changeSection(this)">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                Search
+            </button>
+            <button class="nav-item" data-target="playlists-section" onclick="changeSection(this,true)">
+                <i class="fa-solid fa-list"></i>
+                Playlists
+            </button>
+            <button class="nav-item" data-target="queue-section" onclick="changeSection(this)">
+                <i class="fa-solid fa-list-ul"></i>
+                Queue
+            </button>
+            <button class="nav-item" data-target="for-you-section" onclick="changeSection(this); loadForYouSection()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                For You
+            </button>
+        </nav>
+
+        <!-- CIRCULAR FLOATING PLAYER (draggable, no close button) -->
+        <div class="circular-player" id="circularPlayer" onclick="openPlayerModal()">
+            <div class="cp-inner">
+                <div class="cp-label" id="cpLabel">Song</div>
+                <div class="cp-artist" id="cpArtist">Artist</div>
+                <div class="cp-play-indicator" id="cpIndicator"><i class="fa-solid fa-play"></i></div>
+            </div>
+        </div>
+
+        <!-- FULL PLAYER MODAL -->
+        <div class="player-modal-overlay" id="playerModalOverlay" onclick="if(event.target===this) closePlayerModal()">
+            <div class="player-modal" id="playerModal">
+                <!-- Header -->
+                <div class="modal-header">
+                    <button onclick="closePlayerModal()"><i class="fa-solid fa-chevron-down"></i></button>
+                    <span class="modal-title">Now Playing</span>
+                    <button onclick="toggleQueuePanel()"><i class="fa-solid fa-list"></i></button>
+                </div>
+
+                <!-- Artwork & Visualizer -->
+                <div class="modal-art-wrapper">
+                    <img id="modalArt" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Album Art">
+                    <canvas id="visualizerCanvas"></canvas>
+                </div>
+
+                <!-- Track Info -->
+                <div class="modal-track-info">
+                    <h3 id="modalTitle">No song playing</h3>
+                    <p id="modalArtist"></p>
+                </div>
+
+                <!-- Progress -->
+                <div class="modal-progress">
+                    <span id="modalCurrentTime">0:00</span>
+                    <input type="range" id="modalSeek" min="0" max="100" value="0">
+                    <span id="modalTotalDuration">0:00</span>
+                </div>
+
+                <!-- Main Controls -->
+                <div class="modal-main-controls">
+                    <button class="ctrl-btn" onclick="toggleShuffle()" id="modalShuffle" title="Shuffle">
+                        <i class="fa-solid fa-shuffle"></i>
+                    </button>
+                    <button class="ctrl-btn" onclick="playPrev()" title="Previous">
+                        <i class="fa-solid fa-backward-step"></i>
+                    </button>
+                    <button class="ctrl-btn primary" onclick="togglePlayPause()" id="modalPlayPause">
+                        <i class="fa-solid fa-play" id="modalPlayIcon"></i>
+                        <i class="fa-solid fa-pause" id="modalPauseIcon" style="display:none;"></i>
+                    </button>
+                    <button class="ctrl-btn" onclick="playNext()" title="Next">
+                        <i class="fa-solid fa-forward-step"></i>
+                    </button>
+                    <button class="ctrl-btn" onclick="toggleRepeat()" id="modalRepeat" title="Repeat">
+                        <i class="fa-solid fa-repeat"></i>
+                    </button>
+                </div>
+
+                <!-- Secondary Controls -->
+                <div class="modal-secondary-controls">
+                    <button class="sec-btn" onclick="toggleFavoriteCurrent()" id="modalFavorite" title="Favorite">
+                        <i class="fa-solid fa-heart"></i>
+                    </button>
+                    <button class="sec-btn" onclick="toggleQueuePanel()" title="Queue">
+                        <i class="fa-solid fa-list-ul"></i>
+                    </button>
+                    <button class="sec-btn" onclick="cycleSpeed()" id="speedBtn">1x</button>
+                    <button class="sec-btn" onclick="toggleVisualizer()" id="visualizerBtn"><i class="fa-solid fa-wave-square"></i></button>
+                    <label class="sec-toggle">
+                        <input type="checkbox" id="autoPlayCheck" checked onchange="toggleAutoPlayNext(this.checked)">
+                        Auto
+                    </label>
+                </div>
+
+                <!-- Volume -->
+                <div class="modal-volume">
+                    <i class="fa-solid fa-volume-low"></i>
+                    <input type="range" id="modalVolume" min="0" max="1" step="0.01" value="0.7">
+                    <i class="fa-solid fa-volume-high"></i>
+                </div>
+
+                <audio id="audioPlayer"></audio>
+            </div>
+        </div>
+
+        <!-- PLAYLIST CREATE MODAL (replaces prompt) -->
+        <div id="playlistModal" class="modal-overlay" onclick="if(event.target===this) closePlaylistModal()">
+            <div class="modal-sheet">
+                <div class="modal-header">
+                    <span class="modal-title">New Playlist</span>
+                    <button onclick="closePlaylistModal()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <input type="text" id="playlistNameInput" class="modal-input" placeholder="Enter playlist name..." autofocus>
+                <button class="modal-confirm-btn" onclick="confirmCreatePlaylist()">Create</button>
+            </div>
+        </div>
+
+        <!-- QUEUE PANEL -->
+        <div id="queuePanel" class="queue-panel">
+            <div class="qp-header">
+                <h3>Queue</h3>
+                <button onclick="toggleQueuePanel()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="qp-list" id="qpList">
+                <p class="loading-state">Queue is empty.</p>
+            </div>
+        </div>
+
+        <!-- ARTIST SLIDE-IN MODAL (door style) -->
+        <div class="artist-slide-modal" id="artistSlideModal">
+            <div class="asm-header">
+                <h3 id="asmTitle">More from Artist</h3>
+                <button onclick="closeArtistSlide()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="asm-list" id="asmList">
+                <p class="loading-state">Loading...</p>
+            </div>
+        </div>
+
+        <!-- CATEGORY MODAL -->
+        <div class="cat-modal-overlay" id="categoryModal" onclick="if(event.target===this) closeCategoryModal()">
+            <div class="cat-modal-sheet">
+                <div class="cat-modal-handle"></div>
+                <div class="cat-modal-header">
+                    <div>
+                        <div class="cm-title" id="catModalTitle">Hindi</div>
+                        <div class="cm-sub" id="catModalSubtitle">Top Songs</div>
+                    </div>
+                    <button onclick="closeCategoryModal()">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="cat-modal-play-all">
+                    <button id="catPlayAllBtn" onclick="playAllCategoryTracks()">
+                        <i class="fa-solid fa-play"></i> Play All
+                    </button>
+                    <span class="cm-count" id="catSongCount">Loading...</span>
+                </div>
+                <div class="cat-modal-list" id="catModalList"></div>
+            </div>
+        </div>
+
+        <!-- CONTEXT MENU -->
+        <div class="ctx-menu" id="contextMenu" onmouseleave="this.style.display='none'">
+            <div class="ctx-head">Add to Playlist</div>
+            <div id="contextMenuPlaylists"></div>
+            <div class="ctx-item" style="border-top:1px solid rgba(255,255,255,0.06);margin-top:4px;padding-top:8px;color:#ff453a;" onclick="forgetCurrentTrack()">
+                <i class="fa-solid fa-ban"></i> Forget this song
+            </div>
+        </div>
+
+        <!-- RECORDING MODAL -->
+        <div id="recordingModal" class="modal-overlay" onclick="if(event.target===this) closeRecordingModal()">
+            <div class="modal-sheet">
+                <div class="modal-header">
+                    <span class="modal-title">Recording</span>
+                    <button onclick="stopRecording()"><i class="fa-solid fa-stop"></i></button>
+                </div>
+                <div class="recording-visualizer" id="recordingVisualizer"></div>
+                <p id="recordingStatus">Recording in progress...</p>
+            </div>
+        </div>
+
+        <!-- RECORDING SAVE MODAL -->
+        <div id="recordingSaveModal" class="modal-overlay" onclick="if(event.target===this) closeRecordingSaveModal()">
+            <div class="modal-sheet">
+                <div class="modal-header">
+                    <span class="modal-title">Save Recording</span>
+                    <button onclick="closeRecordingSaveModal()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div id="recordingSaveContent">
+                    <p style="margin-bottom:16px;color:#aeaeb2;">Select a playlist to save this recording to:</p>
+                    <div id="recordingPlaylistList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;"></div>
+                    <button class="create-pl-btn" onclick="createPlaylistForRecording()" style="margin:0;padding:10px;">Create New Playlist</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOUR MODAL -->
+        <div id="tourModal" class="modal-overlay" onclick="if(event.target===this) {}">
+            <div class="modal-sheet">
+                <div class="tour-title" id="tourTitle">Welcome to Song!</div>
+                <div class="tour-desc" id="tourDesc">Let's take a quick tour to help you get started.</div>
+                <div class="tour-progress" id="tourProgress"></div>
+                <div class="tour-actions">
+                    <button class="btn-skip" onclick="endTour()">Skip</button>
+                    <button class="btn-next" onclick="nextTourStep()" id="tourNextBtn">Next</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTEXT MENU -->
+        <div class="ctx-menu" id="contextMenu" onmouseleave="this.style.display='none'">
+            <div class="ctx-head">Add to Playlist</div>
+            <div id="contextMenuPlaylists"></div>
+        </div>
+
+    </div>
+</body>
+</html>
