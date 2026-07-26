@@ -12,8 +12,8 @@
   const STORAGE_KEY_LAST_SHOWN = 'ibk_ads_modal_last_shown';
   const STORAGE_KEY_AD_INDEX = 'ibk_ads_modal_index';
 
-  const SHOW_DELAY_MS = 10 * 1000;            // first show after 10s
-  const REPEAT_INTERVAL_MS = 10 * 60 * 1000;   // show every 10 minutes
+  const SHOW_DELAY_MS = 10 * 1000;
+  const REPEAT_INTERVAL_MS = 10 * 60 * 1000;
   const COUNTDOWN_SECONDS = 10;
 
   const MODAL_ID = 'ibkAdsModalOverlay';
@@ -43,10 +43,17 @@
     );
   }
 
+  function getViewportMetrics() {
+    const vv = window.visualViewport;
+    return {
+      width: Math.round(vv?.width || window.innerWidth || document.documentElement.clientWidth || 0),
+      height: Math.round(vv?.height || window.innerHeight || document.documentElement.clientHeight || 0)
+    };
+  }
+
   function getNextAdUrl() {
     const currentIndex = Number(safeGet(STORAGE_KEY_AD_INDEX) || '0');
     const nextIndex = currentIndex % ADS.length;
-
     safeSet(STORAGE_KEY_AD_INDEX, String((nextIndex + 1) % ADS.length));
     return ADS[nextIndex];
   }
@@ -81,6 +88,7 @@
         -webkit-backdrop-filter: blur(6px);
         padding: 16px;
         margin: 0;
+        box-sizing: border-box;
       }
 
       #${MODAL_ID} .ibk-ads-container {
@@ -95,17 +103,24 @@
         -ms-overflow-style: none;
         width: min(92vw, 680px);
         height: min(92vh, 760px);
+        box-sizing: border-box;
       }
 
       #${MODAL_ID} .ibk-ads-container::-webkit-scrollbar {
         display: none;
       }
 
+      #${MODAL_ID} .ibk-ads-topbar {
+        flex: 0 0 auto;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 12px 12px 8px;
+        gap: 8px;
+        z-index: 5;
+      }
+
       #${MODAL_ID} .ibk-ads-close {
-        position: absolute;
-        top: 14px;
-        right: 14px;
-        z-index: 10;
         background: rgba(0, 0, 0, 0.65);
         backdrop-filter: blur(4px);
         -webkit-backdrop-filter: blur(4px);
@@ -116,13 +131,15 @@
         font-size: 15px;
         font-weight: 600;
         cursor: default;
-        transition: background 0.15s, transform 0.1s;
+        transition: background 0.15s, transform 0.1s, opacity 0.15s;
         letter-spacing: 0.3px;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         gap: 8px;
         user-select: none;
         pointer-events: none;
+        flex: 0 0 auto;
+        white-space: nowrap;
       }
 
       #${MODAL_ID} .ibk-ads-close.enabled {
@@ -149,14 +166,15 @@
       }
 
       #${MODAL_ID} .ibk-ads-content {
-        flex: 1;
+        flex: 1 1 auto;
         position: relative;
         background: #0b0e14;
         display: flex;
-        align-items: center;
-        justify-content: center;
+        align-items: stretch;
+        justify-content: stretch;
         overflow: hidden;
         cursor: pointer;
+        min-height: 0;
       }
 
       #${MODAL_ID} .ibk-ads-frame {
@@ -215,20 +233,65 @@
         opacity: 0.7;
       }
 
+      /* Compact devices */
+      #${MODAL_ID}.ibk-ads-compact .ibk-ads-container {
+        width: min(100vw - 12px, 680px);
+        height: min(100dvh - 12px, 760px);
+      }
+
+      #${MODAL_ID}.ibk-ads-compact .ibk-ads-topbar {
+        padding: 10px 10px 6px;
+      }
+
+      #${MODAL_ID}.ibk-ads-compact .ibk-ads-close {
+        padding: 7px 14px;
+        font-size: 14px;
+      }
+
+      #${MODAL_ID}.ibk-ads-ultra-compact .ibk-ads-overlay {
+        padding: 0;
+      }
+
+      #${MODAL_ID}.ibk-ads-ultra-compact .ibk-ads-container {
+        width: 100vw;
+        height: 100dvh;
+        border-radius: 0;
+      }
+
+      #${MODAL_ID}.ibk-ads-ultra-compact .ibk-ads-topbar {
+        padding: calc(10px + env(safe-area-inset-top, 0px)) 10px 6px;
+      }
+
+      #${MODAL_ID}.ibk-ads-ultra-compact .ibk-ads-close {
+        padding: 6px 12px;
+        font-size: 13px;
+      }
+
+      #${MODAL_ID}.ibk-ads-ultra-compact .ibk-ads-close .ibk-ads-close-icon {
+        font-size: 15px;
+      }
+
+      #${MODAL_ID}.ibk-ads-ultra-compact .ibk-ads-close .ibk-ads-close-label {
+        min-width: 58px;
+      }
+
       @media (max-width: 520px) {
         #${MODAL_ID}.ibk-ads-overlay {
           padding: 0;
         }
 
+        #${MODAL_ID} .ibk-ads-topbar {
+          padding-top: calc(12px + env(safe-area-inset-top, 0px));
+          padding-right: calc(12px + env(safe-area-inset-right, 0px));
+        }
+
         #${MODAL_ID} .ibk-ads-container {
           width: 100vw;
-          height: 100vh;
+          height: 100dvh;
           border-radius: 0;
         }
 
         #${MODAL_ID} .ibk-ads-close {
-          top: 12px;
-          right: 12px;
           padding: 6px 14px;
           font-size: 14px;
         }
@@ -255,10 +318,12 @@
 
     overlay.innerHTML = `
       <div class="ibk-ads-container" role="dialog" aria-modal="true" aria-label="Advertisement">
-        <button type="button" id="ibkAdsCloseBtn" class="ibk-ads-close" aria-label="Close ad">
-          <i class="fas fa-times ibk-ads-close-icon"></i>
-          <span class="ibk-ads-close-label" id="ibkAdsCountdownLabel">Skip 10s</span>
-        </button>
+        <div class="ibk-ads-topbar">
+          <button type="button" id="ibkAdsCloseBtn" class="ibk-ads-close" aria-label="Close ad">
+            <i class="fas fa-times ibk-ads-close-icon"></i>
+            <span class="ibk-ads-close-label" id="ibkAdsCountdownLabel">Skip 10s</span>
+          </button>
+        </div>
 
         <div id="ibkAdsContent" class="ibk-ads-content">
           <iframe
@@ -318,24 +383,40 @@
   }
 
   function fitModalToScreen() {
-    const container = document.querySelector('#' + MODAL_ID + ' .ibk-ads-container');
-    if (!container) return;
+    const modal = getModal();
+    const container = modal?.querySelector('.ibk-ads-container');
+    if (!modal || !container) return;
 
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
+    const { width: vw, height: vh } = getViewportMetrics();
 
-    if (vw <= 520) {
-      container.style.width = '100vw';
-      container.style.height = '100vh';
+    modal.classList.remove('ibk-ads-compact', 'ibk-ads-ultra-compact');
+
+    const ultraSlim = vw <= 360 || vh <= 640;
+    const compact = vw <= 520 || vh <= 760;
+
+    if (ultraSlim) {
+      modal.classList.add('ibk-ads-ultra-compact');
+      container.style.width = `${vw}px`;
+      container.style.height = `${vh}px`;
       container.style.borderRadius = '0';
+      return;
+    }
+
+    if (compact) {
+      modal.classList.add('ibk-ads-compact');
+      const w = Math.max(320, vw - 12);
+      const h = Math.max(480, vh - 12);
+      container.style.width = `${Math.min(w, 680)}px`;
+      container.style.height = `${Math.min(h, 760)}px`;
+      container.style.borderRadius = '18px';
       return;
     }
 
     const maxWidth = Math.min(vw * 0.85, 680);
     const maxHeight = Math.min(vh * 0.85, 760);
 
-    container.style.width = Math.round(Math.max(maxWidth, 320)) + 'px';
-    container.style.height = Math.round(Math.max(maxHeight, 480)) + 'px';
+    container.style.width = `${Math.round(Math.max(maxWidth, 320))}px`;
+    container.style.height = `${Math.round(Math.max(maxHeight, 480))}px`;
     container.style.borderRadius = '24px';
   }
 
@@ -428,8 +509,7 @@
     closeBtn.classList.remove('enabled');
     closeBtn.style.pointerEvents = 'none';
     closeBtn.onclick = null;
-
-    label.textContent = 'Skip ' + remaining + 's';
+    label.textContent = `Skip ${remaining}s`;
 
     clearInterval(countdownTimer);
 
@@ -447,7 +527,7 @@
         return;
       }
 
-      label.textContent = 'Skip ' + remaining + 's';
+      label.textContent = `Skip ${remaining}s`;
     }, 1000);
   }
 
@@ -493,12 +573,15 @@
 
     fitModalToScreen();
     window.addEventListener('resize', fitModalToScreen);
+    window.addEventListener('orientationchange', fitModalToScreen);
+    window.visualViewport?.addEventListener('resize', fitModalToScreen);
 
     scheduleAutoShow();
 
     window.IBKAdsModal = {
       show: showModal,
-      hide: hideModal
+      hide: hideModal,
+      fit: fitModalToScreen
     };
   }
 
