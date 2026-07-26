@@ -2,7 +2,10 @@ const CACHE_NAME = 'song-player-v1';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/manifest.json'
+  '/manifest.json',
+  '/assets/css/styles.css',
+  '/assets/js/scripts.js'
+  
 ];
 
 self.addEventListener('install', event => {
