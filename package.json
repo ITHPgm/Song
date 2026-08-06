@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json.schemastore.org/package",
+  "name": "ibk-techverse",
+  "version": "1.0.0",
+  "private": true,
+  "description": "IBK TechVerse — an all-in-one tech ecosystem for learning, tutorials, courses, tools, resources, practice, blogs, and community.",
+  "author": "IBK TechVerse Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ITHPgm/IBKTechVerse.git"
+  },
+  "homepage": "https://ibktechverse.vercel.app/",
+  "keywords": [
+    "ibk-techverse",
+    "tech-ecosystem",
+    "learning-platform",
+    "tutorials",
+    "courses",
+    "developer-tools",
+    "resources",
+    "practice",
+    "blog",
+    "community",
+    "education",
+    "technology"
+  ],
+  "scripts": {
+    "start": "serve .",
+    "dev": "serve .",
+    "build": "echo \"No build step required for this static site\"",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3",
+    "serve": "^14.2.4"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "main": "main.js",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ITHPgm/IBKTechVerse/issues"
+  },
+  "dependencies": {
+    "axios": "^1.19.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "nodemailer": "^9.0.4",
+    "ws": "^8.21.2"
+  }
+}
