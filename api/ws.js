@@ -8,7 +8,7 @@ const MAX_HISTORY = 50;
 const messageHistory = [];
 
 // Path to the HTML file (index.html is in parent directory)
-const htmlPath = path.join(__dirname, '..', 'general-community', 'index.html');
+const htmlPath = path.join(__dirname, '..', 'song', 'general-community', 'index.html');
 
 const server = http.createServer((req, res) => {
     // Serve the index.html for any request (or only root)
