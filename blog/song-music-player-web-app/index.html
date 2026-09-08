@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Song Premium Music Player: A Complete Web Audio Ecosystem</title>
+<meta name="description" content="Listen to your favourite songs with Song. A fast, modern, and premium music player. Stream, discover, and enjoy high-quality audio anywhere.">
+<meta name="keywords" content="Song, Song Music Player, Song music streaming, Song music platform, Song platform, Song music player website, song-puce, song puce, modern music player, song app, song web, song web app, song web music player, music player, songs, streaming, stream, Video-as-Audio, Upload and Play, Stream and Play, True Offline Playback, Record Audio, Live Visualizer, Save to Playlist, Accessible Music Player, free music player, free music download, free music downloads, ai muisc player, ai music suggestion, ai muisc automation, ai music customization, video to auido, video to audio player, local storage music player, audio player, mp3, playlist, online music">
+<meta name="google-adsense-account" content="ca-pub-8055877573748847">
+<meta name="author" content="Song Team">
+
+<!-- Theme / UI -->
+<meta name="theme-color" content="#0b0e14">
+<meta name="color-scheme" content="dark light">
+
+<!-- PWA -->
+<link rel="manifest" href="../../manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Song">
+
+<!-- Favicon & Icons -->
+<link rel="icon" type="image/png" sizes="192x192" href="https://placehold.co/192x192/0a0a0f/FFFFFF.png?text=Song">
+<link rel="apple-touch-icon" sizes="512x512" href="https://placehold.co/512x512/0a0a0f/FFFFFF.png?text=Song">
+<link rel="mask-icon" href="https://placehold.co/192x192/0a0a0f/FFFFFF.png?text=Song" color="#0b0e14">
+
+<!-- Open Graph (Facebook / WhatsApp) -->
+<meta property="og:title" content="Song — Premium Music Player">
+<meta property="og:description" content="Stream music seamlessly with a fast and modern player.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://song-puce.vercel.app/">
+<meta property="og:image" content="https://placehold.co/192x192/0a0a0f/FFFFFF.png?text=Song">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Song — Premium Music Player">
+<meta name="twitter:description" content="Enjoy music anywhere with our powerful player.">
+<meta name="twitter:image" content="https://placehold.co/192x192/0a0a0f/FFFFFF.png?text=Song">
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Tailwind (for layout) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <style>
+    :root {
+      --bg-base: #07080c;
+      --bg-surface: #0b0e14;
+      --bg-elevated: #10121a;
+      --bg-card: #181b26;
+      --glass-bg: rgba(16,18,26,0.7);
+      --glass-border: rgba(255,255,255,0.08);
+      --glass-bright: rgba(255,255,255,0.16);
+      --accent-pink: #ff375f;
+      --accent-purple: #a855f7;
+      --accent-blue: #3b82f6;
+      --accent-cyan: #00f2fe;
+      --accent-green: #30d158;
+      --gradient-main: linear-gradient(135deg, #ff375f, #a855f7 50%, #3b82f6);
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      min-height: 100vh;
+      line-height: 1.7;
+    }
+
+    .ambient-bg {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255,55,95,0.1), transparent 40%),
+        radial-gradient(circle at 80% 40%, rgba(168,85,247,0.08), transparent 45%),
+        radial-gradient(circle at 50% 95%, rgba(0,242,254,0.05), transparent 35%);
+      filter: blur(90px);
+    }
+
+    .glass { background: var(--glass-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--glass-border); }
+    .glass-hover:hover { border-color: var(--glass-bright); }
+
+    .gradient-text { background: var(--gradient-main); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+
+    h1, h2, h3, h4 { font-family: 'Space Grotesk', sans-serif; font-weight: 700; letter-spacing: -0.02em; }
+
+    ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--bg-base); } ::-webkit-scrollbar-thumb { background: #2a2e3a; border-radius: 20px; }
+
+    .article-body p { color: var(--text-secondary); font-size: 1.05rem; line-height: 1.8; margin-bottom: 1.5rem; }
+    .article-body h2 { font-size: 1.75rem; margin-top: 2.5rem; margin-bottom: 1rem; color: #fff; }
+    .article-body h3 { font-size: 1.4rem; margin-top: 2rem; margin-bottom: 0.75rem; color: #fff; }
+    .article-body blockquote { border-left: 4px solid var(--accent-pink); background: rgba(255,55,95,0.05); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 16px 16px 0; font-style: italic; color: #e2e8f0; }
+    .article-body ul, .article-body ol { margin: 1.5rem 0; padding-left: 1.5rem; }
+    .article-body li { margin-bottom: 0.75rem; color: var(--text-secondary); }
+
+    #readingProgress { position: fixed; top: 0; left: 0; height: 3px; width: 0%; background: var(--gradient-main); z-index: 200; border-radius: 0 4px 4px 0; box-shadow: 0 0 20px rgba(255,55,95,0.4); }
+
+    .toc-link { display: block; padding: 0.4rem 1rem; margin: 0.1rem 0; border-radius: 8px; font-size: 0.85rem; color: var(--text-muted); border-left: 2px solid transparent; transition: var(--transition); text-decoration: none; }
+    .toc-link:hover { color: #fff; background: rgba(255,255,255,0.04); }
+    .toc-link.active { color: var(--accent-pink); border-left-color: var(--accent-pink); background: rgba(255,55,95,0.08); }
+
+    #mobileTocPanel { max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1); }
+    #mobileTocPanel.open { max-height: 500px; }
+
+    /* Comment container scroll */
+    .comment-scroll-area {
+      max-height: 320px;
+      overflow-y: auto;
+      padding-right: 8px;
+      scrollbar-width: thin;
+      scrollbar-color: #334155 transparent;
+    }
+    .comment-scroll-area::-webkit-scrollbar {
+      width: 4px;
+    }
+    .comment-scroll-area::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 20px;
+    }
+
+    /* Saved state icon */
+    .bookmark-saved {
+      color: var(--accent-pink) !important;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ambient-bg"></div>
+  <div id="readingProgress"></div>
+
+  <!-- NAVBAR -->
+  <header class="sticky top-0 z-50 glass border-b border-[var(--glass-border)] px-5 py-4">
+    <div class="max-w-6xl mx-auto flex items-center justify-between gap-3">
+      <a href="blog.html" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-[#181b26] border border-white/10 flex items-center justify-center text-[#ff375f] group-hover:scale-105 transition-transform shadow-lg">
+          <i class="fa-solid fa-compact-disc fa-spin-pulse text-xl" style="--fa-animation-duration: 6s;"></i>
+        </div>
+        <div class="font-['Space_Grotesk'] text-xl font-bold tracking-tight text-white">
+          Song<span class="text-[#ff375f]">.</span>
+          <span class="hidden sm:inline text-xs uppercase tracking-widest font-sans font-semibold text-[var(--text-dim)] ml-2 border-l border-white/10 pl-3">Blog</span>
+        </div>
+      </a>
+      
+      <div class="flex items-center gap-2">
+        <a href="../../blog/" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-xs font-semibold text-[var(--text-muted)] hover:text-white hover:bg-white/10 transition-all">
+          <i class="fa-solid fa-arrow-left text-xs"></i> Back to Blog
+        </a>
+        <a href="../../" class="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#ff375f] via-[#a855f7] to-[#3b82f6] text-white text-xs font-bold shadow-lg hover:brightness-110 transition-all">
+          <i class="fa-solid fa-play text-xs"></i> Launch App
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN ARTICLE CONTAINER -->
+  <main class="relative z-10 max-w-6xl mx-auto px-5 lg:px-8 py-10">
+    
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+      
+      <!-- Main Content -->
+      <div class="lg:col-span-8">
+        
+        <!-- Breadcrumb -->
+        <div class="flex items-center gap-2 text-xs text-[var(--text-dim)] mb-4">
+          <a href="../../blog/" class="hover:text-white transition-colors">Blog</a>
+          <span>/</span>
+          <span class="text-[#ff375f] font-semibold">Product</span>
+        </div>
+
+        <!-- Article Header -->
+        <div class="space-y-6 mb-10">
+          <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-[#ff375f] text-white shadow-md">Overview</span>
+            <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-[#00f2fe] border border-white/10"><i class="fa-solid fa-layer-group mr-1"></i> Web Audio Ecosystem</span>
+            <span class="text-xs text-[var(--text-dim)] flex items-center gap-1"><i class="fa-regular fa-clock"></i> 6 min read</span>
+            <span class="text-xs text-[var(--text-dim)] flex items-center gap-1"><i class="fa-regular fa-calendar"></i> Sept 09, 2026</span>
+          </div>
+          
+          <h1 id="articleTitle" class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.15] text-white">
+            Song Premium Music Player: A Complete Web Audio Ecosystem
+          </h1>
+          
+          <p id="articleDescription" class="text-lg text-[var(--text-muted)] leading-relaxed">
+            How we combined streaming, offline storage, voice recording, and AI discovery into a single, platform‑independent music player that feels native on any device.
+          </p>
+
+          <!-- Author Card -->
+          <div class="flex items-center justify-between border-y border-[var(--glass-border)] py-4 mt-4">
+            <div class="flex items-center gap-3">
+              <img src="https://placehold.co/512x512/0a0a0f/FFFFFF.png?text=Song" class="w-12 h-12 rounded-full object-cover border-2 border-[#ff375f]" alt="Song Team">
+              <div>
+                <div class="text-sm font-bold text-white">Song Team</div>
+                <div class="text-xs text-[var(--text-dim)]">Product & Engineering</div>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button id="shareButton" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[var(--text-muted)] hover:text-[#ff375f] transition-all" title="Share">
+                <i class="fa-solid fa-share-nodes"></i>
+              </button>
+              <button id="saveButton" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[var(--text-muted)] hover:text-[#ff375f] transition-all" title="Save">
+                <i class="fa-regular fa-bookmark"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Image -->
+        <div class="rounded-3xl overflow-hidden shadow-2xl mb-12 border border-[var(--glass-border)]">
+          <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=1200&auto=format&fit=crop&q=80" alt="Audio innovation" class="w-full h-auto object-cover">
+        </div>
+
+        <!-- Article Body -->
+        <article id="articleBody" class="article-body">
+          <p>
+            Music is no longer just something you stream, it's something you experience, control, and carry everywhere. <strong>Song</strong> is a premium, web-based music player designed to give users a complete audio ecosystem in one place: streaming, offline playback, voice recording, and AI-powered discovery; all without subscriptions or limitations.
+          </p>
+          
+          <p>
+            Built for Android, iOS, and Desktop, Song transforms the browser into a powerful music hub that feels like a native app while staying completely lightweight and accessible.
+          </p>
+
+          <h2 id="what-is-song">What is Song?</h2>
+          <p>
+            <strong>Song</strong> is a fully-featured music player web application that combines modern streaming technology with offline-first design. Unlike traditional music apps that lock features behind subscriptions, Song is built on a simple idea:
+          </p>
+          
+          <blockquote>
+            "Your music, your control, anytime — online or offline."
+          </blockquote>
+
+          <p>It merges streaming, personal audio creation, and intelligent recommendations into one seamless interface.</p>
+
+          <h2 id="core-playback">Core Playback Experience</h2>
+          <p>At its heart, Song is a powerful music player with advanced playback controls:</p>
+          <ul>
+            <li>Stream and play millions of songs using a built-in music API</li>
+            <li>Create and manage a dynamic queue system</li>
+            <li>Shuffle playlists or repeat single/all tracks</li>
+            <li>Use sleep timer for automatic playback stop</li>
+          </ul>
+          <p>Everything is optimized for smooth, lag-free performance with instant transitions and responsive controls.</p>
+
+          <h2 id="offline-vault">Offline Vault (True Offline Music)</h2>
+          <p>One of the most powerful features in Song is its <strong>offline vault system powered by IndexedDB</strong>. This system unifies all user audio content into one storage layer:</p>
+          <ul>
+            <li>Downloaded songs</li>
+            <li>Uploaded audio or video files</li>
+            <li>Voice recordings</li>
+          </ul>
+          <p><strong>Why it matters:</strong></p>
+          <ul>
+            <li>Works fully offline after saving content</li>
+            <li>No internet dependency for playback</li>
+            <li>Unlimited storage (based on device capacity)</li>
+            <li>Instant access to all saved media</li>
+          </ul>
+
+          <h2 id="voice-recording">Voice Recording Studio</h2>
+          <p>Song also functions as a lightweight audio recording studio:</p>
+          <ul>
+            <li>Record audio directly from your browser</li>
+            <li>Live visualizer shows real-time recording activity</li>
+            <li>Save recordings directly into playlists</li>
+            <li>Access recordings anytime from offline vault</li>
+          </ul>
+
+          <h2 id="local-files">Local File Support (Audio + Video)</h2>
+          <p>Song allows users to go beyond streaming:</p>
+          <ul>
+            <li>Upload local audio or video files</li>
+            <li>Automatically extract audio from video files</li>
+            <li>Store everything permanently in offline vault</li>
+            <li>Play files instantly without re-uploading</li>
+          </ul>
+
+          <h2 id="ai-for-you">AI-Powered "For You" Experience</h2>
+          <p>Song introduces intelligent music discovery using AI-based behavior analysis:</p>
+          <ul>
+            <li>Tracks listening history</li>
+            <li>Suggests songs based on mood patterns</li>
+            <li>Lets users adjust recommendation style: Discovery vs Familiarity, Acoustic vs Electronic</li>
+            <li>Remove songs from influence using "Forget This Song"</li>
+          </ul>
+
+          <h2 id="premium-ui">Premium Player UI</h2>
+          <p>Song is not just functional, it's visually immersive:</p>
+          <ul>
+            <li>Floating circular mini-player with animated rainbow border</li>
+            <li>Full-screen 3D playback modal with perspective effects</li>
+            <li>Real-time audio visualizer</li>
+            <li>Playback speed control (0.5x to 2x)</li>
+          </ul>
+
+          <h2 id="pwa">Progressive Web App (PWA)</h2>
+          <p>Song is built as a fully installable PWA:</p>
+          <ul>
+            <li>Install directly on Android, iOS, or Desktop</li>
+            <li>Works in standalone app mode</li>
+            <li>Offline caching for faster load times</li>
+            <li>Seamless app-like experience without app store downloads</li>
+          </ul>
+
+          <h2 id="final-thoughts">Final Thoughts</h2>
+          <p>Song is more than a music player, it is a complete audio ecosystem built for modern users who want freedom, control, and creativity in one platform.</p>
+          <p>It merges streaming, offline storage, and AI intelligence into a single seamless experience, making it a strong foundation for the future of web-based music applications.</p>
+          <blockquote>🎉 Enjoy your music. Anytime. Anywhere. With Song.</blockquote>
+        </article>
+
+        <!-- Footer & Comments -->
+        <div class="mt-12 pt-8 border-t border-[var(--glass-border)]">
+          <div class="flex flex-wrap gap-2 mb-8">
+            <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-[var(--text-muted)]">#Music</span>
+            <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-[var(--text-muted)]">#WebAudio</span>
+            <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-[var(--text-muted)]">#PWA</span>
+            <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-[var(--text-muted)]">#AI</span>
+          </div>
+
+          <div class="glass rounded-3xl p-6 mb-8 border border-[var(--glass-border)]">
+            <div class="flex items-center gap-4">
+              <img src="https://placehold.co/512x512/0a0a0f/FFFFFF.png?text=Song" class="w-16 h-16 rounded-full object-cover border-2 border-[#ff375f]" alt="Song Team">
+              <div>
+                <div class="text-sm font-bold text-white">Song Team</div>
+                <div class="text-xs text-[var(--text-dim)] mb-2">Product & Engineering · Song</div>
+                <p class="text-sm text-[var(--text-muted)] leading-relaxed">
+                  We're building the next generation of music experiences for the web. Say hello at hello@song.com.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass rounded-3xl p-6 border border-[var(--glass-border)]">
+            <h3 class="text-lg font-bold text-white mb-4"><i class="fa-regular fa-comment-dots mr-2"></i> Discussion (<span id="commentCount">8</span>)</h3>
+            
+      
+
+            <!-- Comment Input -->
+            <div class="flex gap-3 mt-6 pt-6 border-t border-[var(--glass-border)]">
+              <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=50&auto=format&fit=crop&q=80" class="w-8 h-8 rounded-full object-cover" alt="you">
+              <div class="flex-1 relative">
+                <textarea id="commentInput" rows="2" placeholder="Add to the discussion..." class="w-full bg-[#0a0e1a] border border-[var(--glass-border)] rounded-xl px-4 py-3 text-sm text-white placeholder-[var(--text-dim)] focus:outline-none focus:border-[#ff375f] transition-all resize-none"></textarea>
+                <button id="postCommentBtn" class="absolute bottom-3 right-3 px-4 py-1.5 rounded-lg bg-gradient-to-r from-[#ff375f] to-[#a855f7] text-xs font-bold text-white hover:brightness-110 transition-all">
+                  Post
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SIDEBAR -->
+      <aside class="lg:col-span-4 space-y-8">
+        
+        <div class="lg:hidden">
+          <button id="mobileTocBtn" class="w-full glass rounded-2xl p-4 flex items-center justify-between text-sm font-bold text-white hover:bg-white/10 transition-all" onclick="toggleMobileToc()">
+            <span><i class="fa-solid fa-list-ul mr-2"></i> On this page</span>
+            <i class="fa-solid fa-chevron-down transition-transform" id="mobileTocArrow"></i>
+          </button>
+          <div id="mobileTocPanel" class="glass rounded-2xl p-4 mt-2 border border-[var(--glass-border)]">
+            <nav id="mobileTocNav" class="space-y-1"></nav>
+          </div>
+        </div>
+
+        <div class="hidden lg:block glass rounded-3xl p-6 border border-[var(--glass-border)] sticky top-20">
+          <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2"><i class="fa-solid fa-list-ul text-[#ff375f]"></i> On this page</h3>
+          <nav id="desktopTocNav" class="space-y-1"></nav>
+        </div>
+
+        <div class="glass rounded-3xl p-5 border border-[var(--glass-border)]">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="https://placehold.co/512x512/0a0a0f/FFFFFF.png?text=Song" class="w-12 h-12 rounded-full object-cover border-2 border-[#ff375f]" alt="Song Team">
+            <div>
+              <div class="text-sm font-bold text-white">Song Team</div>
+              <div class="text-xs text-[var(--text-dim)]">Product & Eng</div>
+            </div>
+          </div>
+          <p class="text-xs text-[var(--text-muted)] leading-relaxed mb-4">We build tools for music lovers and creators.</p>
+          <div class="flex items-center gap-2">
+            <a href="#" class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[var(--text-muted)] hover:text-white transition-all"><i class="fa-brands fa-github"></i></a>
+            <a href="#" class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[var(--text-muted)] hover:text-white transition-all"><i class="fa-brands fa-x-twitter"></i></a>
+          </div>
+        </div>
+
+        <div class="glass rounded-3xl p-6 border border-[var(--glass-border)]">
+          <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2"><i class="fa-solid fa-link text-[#00f2fe]"></i> Related</h3>
+          <div class="space-y-4">
+            <a href="#" class="group flex gap-3">
+              <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&auto=format&fit=crop&q=80" class="w-16 h-16 rounded-xl object-cover" alt="AI DJ">
+              <div>
+                <div class="text-xs font-bold text-white group-hover:text-[#ff375f] transition-colors leading-snug">How AI DJ Flow Synthesizes Adaptive Playlists</div>
+                <div class="text-[10px] text-[var(--text-dim)] mt-1">AI & Audio · 6 min</div>
+              </div>
+            </a>
+            <a href="#" class="group flex gap-3">
+              <img src="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=100&auto=format&fit=crop&q=80" class="w-16 h-16 rounded-xl object-cover" alt="WASM">
+              <div>
+                <div class="text-xs font-bold text-white group-hover:text-[#ff375f] transition-colors leading-snug">Instant Local Media Processing via WebAssembly</div>
+                <div class="text-[10px] text-[var(--text-dim)] mt-1">Engineering · 5 min</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+  </main>
+
+  <footer class="glass border-t border-[var(--glass-border)] py-10 px-6 mt-20">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--text-dim)]">
+      <div class="flex items-center gap-3">
+        <div class="font-['Space_Grotesk'] text-lg font-bold text-white">Song<span class="text-[#ff375f]">.</span></div>
+        <div>© 2026 Audio Labs. All rights reserved.</div>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="../../blog/" class="hover:text-white transition-colors">Blog</a>
+        <a href="../../" class="hover:text-white transition-colors">Player</a>
+        <a href="../../privacy/" class="hover:text-white transition-colors">Privacy</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast container for notifications -->
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+
+  <script>
+    // Reading Progress
+    const progressBar = document.getElementById('readingProgress');
+    window.addEventListener('scroll', () => {
+      const scrollTop = document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      progressBar.style.width = (scrollTop / scrollHeight * 100) + '%';
+    });
+
+    // TOC generation & active state
+    const headings = document.querySelectorAll('.article-body h2, .article-body h3');
+    const desktopToc = document.getElementById('desktopTocNav');
+    const mobileToc = document.getElementById('mobileTocNav');
+
+    function buildToc() {
+      headings.forEach((heading, index) => {
+        if (!heading.id) heading.id = `section-${index}`;
+        const link = document.createElement('a');
+        link.href = `#${heading.id}`;
+        link.className = 'toc-link';
+        link.dataset.target = heading.id;
+        link.textContent = heading.textContent;
+        if (heading.tagName.toLowerCase() === 'h3') { link.classList.add('pl-4'); link.style.fontSize = '0.8rem'; }
+        desktopToc.appendChild(link);
+        mobileToc.appendChild(link.cloneNode(true));
+      });
+    }
+
+    function updateActiveToc() {
+      const scrollY = window.scrollY;
+      let currentActiveId = null;
+      headings.forEach((heading) => {
+        if (scrollY >= heading.offsetTop - 120) currentActiveId = heading.id;
+      });
+      document.querySelectorAll('.toc-link').forEach(link => {
+        link.classList.toggle('active', link.dataset.target === currentActiveId);
+      });
+    }
+
+    document.querySelectorAll('.toc-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.getElementById(link.dataset.target);
+        if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); closeMobileToc(); }
+      });
+    });
+
+    // Mobile TOC toggle
+    const mobilePanel = document.getElementById('mobileTocPanel');
+    const mobileArrow = document.getElementById('mobileTocArrow');
+    function toggleMobileToc() { mobilePanel.classList.toggle('open'); mobileArrow.classList.toggle('rotate-180'); }
+    function closeMobileToc() { mobilePanel.classList.remove('open'); mobileArrow.classList.remove('rotate-180'); }
+
+    // Toast function
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `glass rounded-full px-4 py-2 text-sm font-bold text-white shadow-lg flex items-center gap-2 border ${type === 'success' ? 'border-[#30d158]' : 'border-[#ff375f]'}`;
+      toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check text-[#30d158]' : 'fa-circle-exclamation text-[#ff375f]'}"></i> ${message}`;
+      container.appendChild(toast);
+      setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateY(10px)'; toast.style.transition = 'all 0.3s ease'; }, 2500);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    // ─── SHARE BUTTON ───
+    document.getElementById('shareButton').addEventListener('click', () => {
+      const title = document.getElementById('articleTitle').textContent;
+      const description = document.getElementById('articleDescription').textContent;
+      const link = window.location.href;
+      const shareText = `${title}\n\n${description}\n\n🔗 ${link}`;
+
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(shareText).then(() => {
+          showToast('Article info copied to clipboard!');
+        }).catch(() => {
+          // fallback for older browsers
+          const tempInput = document.createElement('textarea');
+          tempInput.value = shareText;
+          document.body.appendChild(tempInput);
+          tempInput.select();
+          document.execCommand('copy');
+          document.body.removeChild(tempInput);
+          showToast('Article info copied to clipboard!');
+        });
+      } else {
+        const tempInput = document.createElement('textarea');
+        tempInput.value = shareText;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        showToast('Article info copied to clipboard!');
+      }
+    });
+
+    // ─── SAVE / BOOKMARK BUTTON ───
+    const saveBtn = document.getElementById('saveButton');
+    const bookmarkIcon = saveBtn.querySelector('i');
+    let isSaved = false;
+
+    // Check if already saved in localStorage
+    function loadSavedState() {
+      const savedArticles = JSON.parse(localStorage.getItem('savedBlogArticles') || '[]');
+      const currentArticle = window.location.pathname + window.location.search;
+      isSaved = savedArticles.includes(currentArticle);
+      if (isSaved) {
+        bookmarkIcon.classList.remove('fa-regular');
+        bookmarkIcon.classList.add('fa-solid');
+        saveBtn.classList.add('bookmark-saved');
+      } else {
+        bookmarkIcon.classList.add('fa-regular');
+        bookmarkIcon.classList.remove('fa-solid');
+        saveBtn.classList.remove('bookmark-saved');
+      }
+    }
+
+    saveBtn.addEventListener('click', () => {
+      const savedArticles = JSON.parse(localStorage.getItem('savedBlogArticles') || '[]');
+      const currentArticle = window.location.pathname + window.location.search;
+
+      if (isSaved) {
+        // Remove from saved
+        const index = savedArticles.indexOf(currentArticle);
+        if (index > -1) savedArticles.splice(index, 1);
+        localStorage.setItem('savedBlogArticles', JSON.stringify(savedArticles));
+        isSaved = false;
+        bookmarkIcon.classList.remove('fa-solid');
+        bookmarkIcon.classList.add('fa-regular');
+        saveBtn.classList.remove('bookmark-saved');
+        showToast('Article removed from saved.');
+      } else {
+        // Add to saved
+        savedArticles.push(currentArticle);
+        localStorage.setItem('savedBlogArticles', JSON.stringify(savedArticles));
+        isSaved = true;
+        bookmarkIcon.classList.remove('fa-regular');
+        bookmarkIcon.classList.add('fa-solid');
+        saveBtn.classList.add('bookmark-saved');
+        showToast('Article saved successfully!');
+      }
+    });
+
+    // ─── COMMENT SECTION ───
+    let commentCount = 8; // initial from HTML
+
+    document.getElementById('postCommentBtn').addEventListener('click', () => {
+      const input = document.getElementById('commentInput');
+      const text = input.value.trim();
+      if (!text) {
+        showToast('Please write a comment before posting.', 'error');
+        return;
+      }
+
+      const commentSection = document.getElementById('commentSection');
+      const newComment = document.createElement('div');
+      newComment.className = 'flex gap-3';
+      newComment.innerHTML = `
+        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=50&auto=format&fit=crop&q=80" class="w-8 h-8 rounded-full object-cover" alt="you">
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs font-bold">You</span>
+            <span class="text-[10px] text-[var(--text-dim)]">Just now</span>
+          </div>
+          <p class="text-sm text-[var(--text-muted)] leading-relaxed">${text}</p>
+        </div>
+      `;
+
+      commentSection.insertBefore(newComment, commentSection.firstChild);
+      input.value = '';
+      
+      // Update comment count
+      commentCount++;
+      document.getElementById('commentCount').textContent = commentCount;
+      
+      showToast('Comment posted successfully!');
+      
+      // Automatically scroll to top of comments
+      commentSection.scrollTop = 0;
+    });
+
+    // Initialize TOC
+    buildToc();
+    window.addEventListener('scroll', updateActiveToc);
+    updateActiveToc();
+    
+    // Initialize saved state
+    loadSavedState();
+
+    if (window.location.hash) {
+      const target = document.getElementById(window.location.hash.substring(1));
+      if (target) setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+  </script>
+</body>
+</html>
